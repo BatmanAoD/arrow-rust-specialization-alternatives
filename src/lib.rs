@@ -1,6 +1,3 @@
-#![allow(incomplete_features)]
-#![feature(specialization)]
-
 mod bit_util {
     static BIT_MASK: [u8; 8] = [1, 2, 4, 8, 16, 32, 64, 128];
     #[inline]
@@ -11,13 +8,21 @@ mod bit_util {
 
 trait ArrowPrimitiveType {
     type Native: Copy;
+    fn index(raw_ptr: *const Self::Native, i: usize) -> Self::Native;
 }
 
-trait ArrowNumericType: ArrowPrimitiveType {}
+trait ArrowNumericType: ArrowPrimitiveType {
+    fn index(raw_ptr: *const Self::Native, i: usize) -> Self::Native {
+        unsafe { *(raw_ptr.add(i)) }
+    }
+}
 
 struct BooleanType {}
 impl ArrowPrimitiveType for BooleanType {
     type Native = bool;
+    fn index(raw_ptr: *const bool, i: usize) -> bool {
+        unsafe { bit_util::get_bit_raw(raw_ptr as *const u8, i) }
+    }
 }
 
 struct PrimitiveArray<T: ArrowPrimitiveType> {
@@ -32,19 +37,7 @@ impl<T: ArrowPrimitiveType> PrimitiveArrayOps<T> for PrimitiveArray<T> {
     // This impl must exist so that `PrimitiveArray::<T: ArrowPrimitiveType>::value(i)` can be
     // called without knowing the type of `T`.
     
-    default fn value(&self, _: usize) -> T::Native {
-        unimplemented!()
-    }
-}
-
-impl<T: ArrowNumericType> PrimitiveArrayOps<T> for PrimitiveArray<T> {
     fn value(&self, i: usize) -> T::Native {
-        unsafe { *(self.raw_values.add(i)) }
-    }
-}
-
-impl PrimitiveArrayOps<BooleanType> for PrimitiveArray<BooleanType> {
-    fn value(&self, i: usize) -> bool {
-        unsafe { bit_util::get_bit_raw(self.raw_values as *const u8, i) }
+        T::index(self.raw_values, i)
     }
 }
