@@ -21,15 +21,13 @@ mod tests {
         assert!(arr.value(3) == 42);
     }
 
-    /* XXX how is the bool-pointer created for a bit-packed boolean array?
     #[test]
     fn bool_index() {
-        let backing = 4;
-        let arr = PrimitiveArray::<BooleanType>{ raw_values: &backing as *const bool };
+        let backing = 8_u8;
+        let arr = PrimitiveArray::<BooleanType>{ raw_values: &backing as *const u8 as *const bool };
         assert!(arr.value(2) == false);
         assert!(arr.value(3) == true);
     }
-    */
 
     struct TestInt {}
     impl ArrowPrimitiveType for TestInt {
@@ -47,7 +45,6 @@ trait ArrowNumericType: ArrowPrimitiveType {}
 
 struct BooleanType {}
 impl ArrowPrimitiveType for BooleanType {
-    // XXX is this correct? It seems... not correct.
     type Native = bool;
 }
 
