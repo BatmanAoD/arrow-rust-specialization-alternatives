@@ -6,6 +6,34 @@ mod bit_util {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use crate::*;
+
+    #[test]
+    fn int_index() {
+        let backing = [0, 0, 0, 42, 0];
+        let arr = PrimitiveArray::<TestInt>{ raw_values: &backing[0] as *const i32 };
+        assert!(arr.value(2) == 0);
+        assert!(arr.value(3) == 42);
+    }
+
+    #[test]
+    fn bool_index() {
+        let backing = 8_u8;
+        let arr = PrimitiveArray::<BooleanType>{ raw_values: &backing as *const u8 as *const bool };
+        assert!(arr.value(2) == false);
+        assert!(arr.value(3) == true);
+    }
+
+    struct TestInt {}
+    impl ArrowPrimitiveType for TestInt {
+        type Native = i32;
+    }
+    impl ArrowNumericType for TestInt {}
+}
+
+
 trait ArrowPrimitiveType {
     type Native: Copy;
     fn index(raw_ptr: *const Self::Native, i: usize) -> Self::Native;
