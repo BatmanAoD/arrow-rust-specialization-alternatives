@@ -29,6 +29,9 @@ mod tests {
     struct TestInt {}
     impl ArrowPrimitiveType for TestInt {
         type Native = i32;
+        fn index(raw_ptr: *const i32, i: usize) -> i32 {
+            unsafe { *(raw_ptr.add(i)) }
+        }
     }
     impl ArrowNumericType for TestInt {}
 }
@@ -45,7 +48,7 @@ trait ArrowNumericType: ArrowPrimitiveType {
     }
 }
 
-struct BooleanType {}
+pub struct BooleanType {}
 impl ArrowPrimitiveType for BooleanType {
     type Native = bool;
     fn index(raw_ptr: *const bool, i: usize) -> bool {
