@@ -43,7 +43,7 @@ trait ArrowPrimitiveType {
 
 trait ArrowNumericType: ArrowPrimitiveType {}
 
-struct BooleanType {}
+pub struct BooleanType {}
 impl ArrowPrimitiveType for BooleanType {
     type Native = bool;
 }

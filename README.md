@@ -54,7 +54,7 @@ impl<T: ArrowPrimitiveType> PrimitiveArrayOps<T> for PrimitiveArray<T> {
 ```rust
 trait ArrowPrimitiveType {
     type Native;
-    fn T::index(*const T::Native, usize) -> T::Native;
+    fn index(*const Native, usize) -> Native;
 }
 
 impl<T: ArrowPrimitiveType> PrimitiveArrayOps<T> for PrimitiveArray<T> {
