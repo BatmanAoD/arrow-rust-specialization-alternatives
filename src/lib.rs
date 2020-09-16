@@ -39,14 +39,12 @@ mod tests {
 
 trait ArrowPrimitiveType {
     type Native: Copy;
-    fn index(raw_ptr: *const Self::Native, i: usize) -> Self::Native;
-}
-
-trait ArrowNumericType: ArrowPrimitiveType {
     fn index(raw_ptr: *const Self::Native, i: usize) -> Self::Native {
         unsafe { *(raw_ptr.add(i)) }
     }
 }
+
+trait ArrowNumericType: ArrowPrimitiveType { }
 
 pub struct BooleanType {}
 impl ArrowPrimitiveType for BooleanType {
